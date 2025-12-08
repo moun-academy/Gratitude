@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gratitude Tracker</title>
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Gratitude Mood Tracker</h1>
+      <p>Reflect on your day, score how fortunate you feel, and watch your trend over time.</p>
+    </header>
+
+    <section class="card">
+      <h2>Daily Check-In</h2>
+      <p class="helper">Answer a few quick prompts and rate how important each one felt today.</p>
+      <form id="checkin-form" class="grid" autocomplete="off">
+        <div class="prompt">
+          <label for="prompt-1">Did something kind happen?</label>
+          <div class="controls">
+            <select id="prompt-1" name="prompt-1" data-label="Kindness">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+            <input type="number" min="1" max="5" value="3" aria-label="Kindness importance" />
+          </div>
+        </div>
+        <div class="prompt">
+          <label for="prompt-2">Did you feel proud of yourself?</label>
+          <div class="controls">
+            <select id="prompt-2" name="prompt-2" data-label="Pride">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+            <input type="number" min="1" max="5" value="3" aria-label="Pride importance" />
+          </div>
+        </div>
+        <div class="prompt">
+          <label for="prompt-3">Did you enjoy a small moment?</label>
+          <div class="controls">
+            <select id="prompt-3" name="prompt-3" data-label="Joy">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+            <input type="number" min="1" max="5" value="3" aria-label="Joy importance" />
+          </div>
+        </div>
+        <button type="submit">Save today’s score</button>
+      </form>
+      <div class="score-display">
+        <p>Today&rsquo;s score:</p>
+        <p class="score-value" id="score-value">--</p>
+        <small id="score-detail"></small>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Trend</h2>
+        <div class="rolling">
+          <label for="rolling-window">Rolling average (days)</label>
+          <input type="number" id="rolling-window" min="1" max="30" value="7" />
+        </div>
+      </div>
+      <div id="trend-empty" class="empty">No history yet. Your chart will appear after you save a score.</div>
+      <svg id="trend-chart" aria-label="Gratitude score trend" role="img"></svg>
+      <div class="averages" id="average-output"></div>
+    </section>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
