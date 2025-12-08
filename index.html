@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gratitude Practice</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --card: #f8fafc;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #f8fafc, #eef2ff);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app-shell {
+      width: min(1100px, 100%);
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+      padding: 32px 32px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, #dbeafe, #f8fafc);
+      border-radius: 16px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .cta:hover { transform: translateY(-1px); }
+    .cta:active { transform: translateY(1px); box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25); }
+
+    .secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      box-shadow: none;
+    }
+
+    .status-grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 6px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf3;
+      color: #166534;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .nudge {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 14px -18px;
+    }
+
+    .list {
+      padding-left: 20px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .session-modal,
+    .onboarding {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px;
+      width: min(720px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .prompt-text {
+      font-size: 1.1rem;
+      margin: 0 0 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      resize: vertical;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .pill-blue { background: #eff6ff; color: #1d4ed8; }
+    .pill-gold { background: #fef9c3; color: #854d0e; }
+
+    .kicker { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; font-size: 0.8rem; color: var(--muted); }
+
+    .slide-indicator {
+      display: flex;
+      gap: 6px;
+      margin: 10px 0 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+
+    .dot.active { background: var(--accent); }
+
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+      .app-shell { padding: 20px; }
+      header { flex-direction: column; align-items: flex-start; }
+      .footer-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 21a9 9 0 1 1 9-9" opacity="0.3"></path>
+          <path d="M12 3v18"></path>
+          <path d="M4.5 9h15"></path>
+          <path d="M7 16h10"></path>
+        </svg>
+        Gratitude, daily
+      </div>
+      <div class="meta">
+        <span id="streakPill" class="pill pill-gold">Day 0</span>
+        <span id="nudgePill" class="pill pill-blue">Ready to begin</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="kicker">Presence-led journaling</div>
+        <h1>Arrive, notice, and celebrate small shifts.</h1>
+        <p>Start a 5–10 question flow to acknowledge what’s working, where you felt present, and what you’d love to see more of.</p>
+        <button id="startButton" class="cta">Start today’s 5–10 questions</button>
+        <button id="revisitOnboarding" class="cta secondary">Why this matters</button>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Today’s focus</h3>
+          <p class="muted">Follow gentle prompts that keep you grounded in gratitude and presence.</p>
+          <ul class="list">
+            <li>Notice moments that felt calm or connected.</li>
+            <li>Thank people, spaces, and rhythms that support you.</li>
+            <li>Commit to one small, doable action for today.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="status-grid">
+      <div class="card">
+        <div class="kicker">Daily practice</div>
+        <h3>Progress toward 5–10 reflections</h3>
+        <div class="progress" aria-label="progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="progressLabel" class="muted">0 / 10 prompts captured</div>
+        <div class="divider"></div>
+        <div class="meta">
+          <span class="pill">Consistent feels good</span>
+          <span class="muted" id="lastCompletedLabel">No session yet</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="kicker">Last session</div>
+        <h3 id="scoreHeader">No score yet</h3>
+        <p id="scoreDetails" class="muted">Complete today’s flow to see your most recent presence score.</p>
+      </div>
+
+      <div class="card">
+        <div class="kicker">Keep the rhythm</div>
+        <h3 id="streakHeader">0-day streak</h3>
+        <p id="nudgeCopy" class="muted">Show up for a few minutes to plant today’s flag.</p>
+        <div class="divider"></div>
+        <button class="cta secondary" id="gentleNudge">I can do 5 minutes</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="onboarding" class="onboarding">
+    <div class="modal-card">
+      <div class="kicker">Why this exists</div>
+      <h2 id="onboardingTitle">Stay with what’s real</h2>
+      <p id="onboardingCopy" class="muted">Gratitude and presence aren’t checkboxes—they’re invitations to notice how today is already supporting you.</p>
+      <div class="card" style="margin-top: 14px;">
+        <h3>Sample prompt</h3>
+        <p id="sampleQuestion" class="prompt-text">When did you feel most grounded today?</p>
+      </div>
+      <div class="slide-indicator" id="slideDots"></div>
+      <div class="footer-actions">
+        <button id="skipOnboarding" class="cta secondary">Skip</button>
+        <button id="nextSlide" class="cta">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sessionModal" class="session-modal">
+    <div class="modal-card">
+      <div class="kicker">Today’s flow</div>
+      <h2 id="sessionTitle">Welcome back</h2>
+      <p class="muted">Stay with the question for a breath or two, then capture a few words.</p>
+      <p id="questionText" class="prompt-text"></p>
+      <label class="muted" for="presenceSlider">How present did you feel in this moment?</label>
+      <input id="presenceSlider" type="range" min="1" max="5" value="3">
+      <textarea id="responseField" placeholder="Capture a few sentences…"></textarea>
+      <div class="footer-actions">
+        <button id="closeSession" class="cta secondary">Save & pause</button>
+        <div style="display:flex; gap:10px;">
+          <button id="finishSession" class="cta secondary">Finish session</button>
+          <button id="nextQuestion" class="cta">Next question</button>
+        </div>
+      </div>
+      <div class="muted" id="sessionProgress">Question 1 of 10</div>
+    </div>
+  </div>
+
+  <script>
+    const prompts = [
+      "What felt surprisingly supportive today?",
+      "Where did you notice a pocket of calm?",
+      "Who helped you feel seen or appreciated?",
+      "What rhythm or habit steadied you?",
+      "How did you show up for someone else?",
+      "What small win deserves a quiet celebration?",
+      "Where did you choose presence over autopilot?",
+      "What did your body appreciate today?",
+      "What are you looking forward to tomorrow?",
+      "What’s one gentle action you can take before the day ends?"
+    ];
+
+    const onboardingSlides = [
+      {
+        title: "Gratitude builds presence",
+        copy: "We’re here to help you notice the small signals that today is already supporting you—no gamification, just honest reflections.",
+        sample: "Name a moment that made you feel anchored today."
+      },
+      {
+        title: "Short, steady practice",
+        copy: "Answer 5–10 questions in a few minutes. Each one invites you to pause and locate yourself before the next step.",
+        sample: "What rhythm kept you steady this morning?"
+      },
+      {
+        title: "Carry it forward",
+        copy: "Finish with one tiny action that feels possible. Consistency matters more than perfection.",
+        sample: "What’s a gentle action you can take before the day ends?"
+      }
+    ];
+
+    const STORAGE_KEY = "gratitude-practice";
+    let data = loadData();
+    let session = null;
+    hydrateDayProgress();
+    renderDashboard();
+    initOnboarding();
+
+    document.getElementById("startButton").addEventListener("click", openSession);
+    document.getElementById("revisitOnboarding").addEventListener("click", showOnboarding);
+    document.getElementById("gentleNudge").addEventListener("click", openSession);
+    document.getElementById("nextQuestion").addEventListener("click", handleNextQuestion);
+    document.getElementById("finishSession").addEventListener("click", finishSession);
+    document.getElementById("closeSession").addEventListener("click", closeSession);
+    document.getElementById("skipOnboarding").addEventListener("click", () => {
+      data.onboardingComplete = true;
+      saveData();
+      hideOnboarding();
+    });
+
+    function loadData() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+      return {
+        onboardingComplete: false,
+        lastCompletedDate: null,
+        streak: 0,
+        progressToday: 0,
+        totalQuestions: 10,
+        lastScore: null,
+        lastResponsePreview: ""
+      };
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getToday() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function hydrateDayProgress() {
+      const today = getToday();
+      if (data.lastCompletedDate !== today) {
+        data.progressToday = 0;
+      }
+      saveData();
+    }
+
+    function initOnboarding() {
+      updateOnboardingSlide(0);
+      if (!data.onboardingComplete) {
+        showOnboarding();
+      }
+    }
+
+    function showOnboarding() {
+      document.getElementById("onboarding").style.display = "flex";
+    }
+
+    function hideOnboarding() {
+      document.getElementById("onboarding").style.display = "none";
+    }
+
+    function updateOnboardingSlide(index) {
+      const slide = onboardingSlides[index];
+      document.getElementById("onboardingTitle").textContent = slide.title;
+      document.getElementById("onboardingCopy").textContent = slide.copy;
+      document.getElementById("sampleQuestion").textContent = slide.sample;
+      const dots = onboardingSlides.map((_, i) => `<span class="dot ${i === index ? "active" : ""}"></span>`).join("");
+      document.getElementById("slideDots").innerHTML = dots;
+      const nextButton = document.getElementById("nextSlide");
+      if (index === onboardingSlides.length - 1) {
+        nextButton.textContent = "Start now";
+        nextButton.onclick = () => {
+          data.onboardingComplete = true;
+          saveData();
+          hideOnboarding();
+          openSession();
+        };
+      } else {
+        nextButton.textContent = "Next";
+        nextButton.onclick = () => updateOnboardingSlide(index + 1);
+      }
+    }
+
+    function openSession() {
+      session = { index: 0, answers: [], presence: [] };
+      document.getElementById("responseField").value = "";
+      document.getElementById("presenceSlider").value = 3;
+      document.getElementById("sessionModal").style.display = "flex";
+      document.body.style.overflow = "hidden";
+      renderQuestion();
+    }
+
+    function closeSession() {
+      document.getElementById("sessionModal").style.display = "none";
+      document.body.style.overflow = "auto";
+      renderDashboard();
+    }
+
+    function renderQuestion() {
+      if (!session) return;
+      document.getElementById("questionText").textContent = prompts[session.index];
+      document.getElementById("sessionProgress").textContent = `Question ${session.index + 1} of ${prompts.length}`;
+      document.getElementById("nextQuestion").textContent = session.index >= prompts.length - 1 ? "Save response" : "Next question";
+      document.getElementById("finishSession").disabled = session.answers.length < 4;
+    }
+
+    function recordResponse() {
+      const text = document.getElementById("responseField").value.trim();
+      const presence = Number(document.getElementById("presenceSlider").value);
+      if (text) {
+        session.answers[session.index] = text;
+        session.presence[session.index] = presence;
+      }
+    }
+
+    function handleNextQuestion() {
+      recordResponse();
+      if (!session.answers[session.index]) {
+        alert("Capture a few words so you can revisit them later.");
+        return;
+      }
+      if (session.index < prompts.length - 1) {
+        session.index += 1;
+        document.getElementById("responseField").value = session.answers[session.index] || "";
+        document.getElementById("presenceSlider").value = session.presence[session.index] || 3;
+        renderQuestion();
+      } else {
+        finishSession();
+      }
+    }
+
+    function finishSession() {
+      recordResponse();
+      if (session.answers.length < 5 || session.answers.filter(Boolean).length < 5) {
+        alert("Aim for at least five reflections to complete today’s flow.");
+        return;
+      }
+      const answered = session.answers.filter(Boolean).length;
+      const presenceAvg = Math.round(session.presence.filter(Boolean).reduce((a, b) => a + b, 0) / answered * 10) / 10;
+      data.progressToday = Math.min(answered, data.totalQuestions);
+      const today = getToday();
+      if (data.lastCompletedDate === today) {
+        data.streak = data.streak || 1;
+      } else if (data.lastCompletedDate === previousDay()) {
+        data.streak = (data.streak || 0) + 1;
+      } else {
+        data.streak = 1;
+      }
+      data.lastCompletedDate = today;
+      data.lastScore = { presence: presenceAvg, answered };
+      data.lastResponsePreview = session.answers.find(Boolean) || "";
+      data.onboardingComplete = true;
+      saveData();
+      session = null;
+      closeSession();
+      renderDashboard();
+    }
+
+    function previousDay() {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function daysSinceLast() {
+      if (!data.lastCompletedDate) return null;
+      const last = new Date(data.lastCompletedDate);
+      const today = new Date(getToday());
+      const diff = Math.round((today - last) / (1000 * 60 * 60 * 24));
+      return diff;
+    }
+
+    function renderDashboard() {
+      const progressPercent = Math.round((data.progressToday / data.totalQuestions) * 100);
+      document.getElementById("progressBar").style.width = `${progressPercent}%`;
+      document.getElementById("progressLabel").textContent = `${data.progressToday} / ${data.totalQuestions} prompts captured`;
+      document.getElementById("lastCompletedLabel").textContent = data.lastCompletedDate ? `Last session: ${data.lastCompletedDate}` : "No session yet";
+      const streak = data.streak || 0;
+      document.getElementById("streakHeader").textContent = `${streak}-day streak`;
+      document.getElementById("streakPill").textContent = streak > 0 ? `Day ${streak}` : "Day 0";
+
+      if (data.lastScore) {
+        document.getElementById("scoreHeader").textContent = `Presence score: ${data.lastScore.presence}/5`;
+        document.getElementById("scoreDetails").textContent = `You captured ${data.lastScore.answered} reflections. Keep the tone: warm, honest, and specific.`;
+      }
+
+      const idleDays = daysSinceLast();
+      const nudgePill = document.getElementById("nudgePill");
+      const nudgeCopy = document.getElementById("nudgeCopy");
+      if (idleDays === null) {
+        nudgePill.textContent = "Start whenever you’re ready";
+        nudgeCopy.textContent = "Take five minutes to mark a new beginning.";
+      } else if (idleDays === 0) {
+        nudgePill.textContent = "You showed up today";
+        nudgeCopy.textContent = "Consider a quick check-in tonight to lock in the feeling.";
+      } else if (idleDays === 1) {
+        nudgePill.textContent = "Keep the streak";
+        nudgeCopy.textContent = "Yesterday’s reflections are fresh—return for a quick follow-up.";
+      } else {
+        nudgePill.textContent = "We miss your voice";
+        nudgeCopy.textContent = `It’s been ${idleDays} days. A gentle nudge: two minutes is enough.`;
+      }
+    }
+  </script>
+</body>
+</html>
