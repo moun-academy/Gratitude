@@ -1,0 +1,6 @@
+category,metric,value,unit,update_date,source,source_url
+homelessness,People experiencing homelessness on a single night,653104,people,2023-12-15,"HUD 2023 Annual Homeless Assessment Report (AHAR) Part 1",https://www.huduser.gov/portal/sites/default/files/pdf/2023-AHAR-Part-1.pdf
+hunger,People living in food-insecure households,44000000,people,2024-05-01,USDA Household Food Security in the United States in 2023,https://www.ers.usda.gov/publications/pub-details/?pubid=107731
+health,Adults without health insurance,25000000,people,2024-02-15,CDC National Health Interview Survey early release,https://www.cdc.gov/nchs/data/nhis/earlyrelease/insur202402.pdf
+safety,Violent crime rate,380.7,incidents per 100,000 residents,2024-03-15,FBI Crime in the United States 2022 (revised release),https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/downloads
+connection,Adults who volunteered for an organization in the past year,23.2,percent,2024-01-15,"Census/ AmeriCorps CPS Volunteering Supplement, 2023 release",https://americorps.gov/about/our-impact/research-and-reports/volunteering-civic-life

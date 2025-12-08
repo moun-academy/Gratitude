@@ -1,0 +1,98 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+body {
+  margin: 0;
+  padding: 0 1.5rem 2rem;
+}
+
+header {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 0 1rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+#loader-status {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.status-warning {
+  margin: 0.25rem 0 0;
+  color: #b45309;
+  font-size: 0.85rem;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+#dataset-meta {
+  margin: 0 0 1.5rem;
+  color: #475569;
+}
+
+#stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0ea5e9;
+}
+
+.stat-meta {
+  margin: 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.stat-source {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.stat-source a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted #cbd5e1;
+}
+
+.stat-source a:hover {
+  color: #0ea5e9;
+  border-bottom-color: #0ea5e9;
+}
