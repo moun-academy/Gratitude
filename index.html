@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gratitude Design System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section class="section">
+    <h1>Gratitude Design Language</h1>
+    <p>A cozy set of tokens, components, and warm icons built around soft neutrals and radiant gradients.</p>
+  </section>
+
+  <section class="section">
+    <h2>Design Tokens</h2>
+    <div class="token-grid">
+      <div class="token">
+        <h3>Color Palette</h3>
+        <div class="color-swatch"><span class="sample" style="background: var(--color-cream);"></span> Cream</div>
+        <div class="color-swatch"><span class="sample" style="background: var(--color-sand);"></span> Sand</div>
+        <div class="color-swatch"><span class="sample" style="background: var(--color-oat);"></span> Oat</div>
+        <div class="color-swatch"><span class="sample" style="background: var(--color-clay);"></span> Clay</div>
+        <div class="color-swatch"><span class="sample" style="background: var(--color-charcoal);"></span> Charcoal</div>
+        <div class="color-swatch"><span class="sample" style="background: var(--gradient-sunrise);"></span> Sunrise gradient</div>
+      </div>
+      <div class="token">
+        <h3>Typography</h3>
+        <p style="font-size: var(--font-size-xl); font-family: var(--font-serif); margin: 0;">Serif Title</p>
+        <p style="font-size: var(--font-size-lg); margin: 0;">Sans Subtitle</p>
+        <p style="font-size: var(--font-size-md); margin: 0;">Base body copy</p>
+        <p style="font-size: var(--font-size-sm); margin: 0;">Secondary details</p>
+      </div>
+      <div class="token">
+        <h3>Spacing & Radii</h3>
+        <p>Spacing scale: 4, 8, 12, 16, 24, 32, 48</p>
+        <p>Radii: 8 (sm), 12 (md), 20 (lg), pill</p>
+        <p>Shadows: soft, elevated, inset</p>
+        <p>Motion: fast 150ms, base 250ms, slow 400ms</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Standardized Components</h2>
+    <div class="button-group">
+      <button class="primary">Primary</button>
+      <button class="secondary">Secondary</button>
+      <button class="ghost">Ghost</button>
+    </div>
+    <div style="margin-top: var(--space-lg); display: grid; gap: var(--space-md);">
+      <div class="card">
+        <h3>Card Surface</h3>
+        <p>Soft edges, layered neutrals, and subtle lift on hover to keep the experience tactile yet calm.</p>
+      </div>
+      <div>
+        <label style="display: flex; justify-content: space-between; font-weight: var(--font-weight-medium);">
+          Progress
+          <span style="color: var(--color-charcoal);">62%</span>
+        </label>
+        <div class="progress" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Warm Icon & Emoji Set</h2>
+    <p>Use these to sprinkle warmth without clutter. They pair with the gradients and neutrals above.</p>
+    <div class="icon-row">
+      <span class="icon-badge"><img src="assets/icons/sunrise.svg" alt="sunrise icon" /> New day</span>
+      <span class="icon-badge"><img src="assets/icons/heart-hand.svg" alt="heart-in-hand icon" /> Support</span>
+      <span class="icon-badge"><img src="assets/icons/sparkle.svg" alt="sparkle icon" /> Delight</span>
+      <span class="icon-badge">🤗 Embrace</span>
+      <span class="icon-badge">🌿 Calm</span>
+    </div>
+  </section>
+</body>
+</html>
