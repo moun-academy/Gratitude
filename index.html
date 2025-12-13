@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
   <title>Identity Forge</title>
   <style>
     * {
@@ -794,6 +795,17 @@
   <div class="toast" id="toast"></div>
   
   <script>
+    // Register Service Worker for PWA notifications
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registered');
+        })
+        .catch(err => {
+          console.log('Service Worker registration failed:', err);
+        });
+    }
+    
     // Wake-up truths and questions
     const truths = [
       {
@@ -844,6 +856,7 @@
       checkEveningAvailability();
       loadNotificationSettings();
       startNotificationChecker();
+      scheduleNextNotifications();
     }
     
     // Setup slider value displays
@@ -954,6 +967,7 @@
       saveToStorage();
       showToast('Morning complete. Make it count.');
       updateStats();
+      scheduleNextNotifications(); // Reschedule evening notification
       
       // Clear form
       document.getElementById('truthResponse').value = '';
@@ -1003,6 +1017,7 @@
       saveToStorage();
       showToast('Evening complete. Rest well.');
       updateStats();
+      scheduleNextNotifications(); // Reschedule for tomorrow
       
       // Clear form
       eveningDidIt = null;
@@ -1198,9 +1213,21 @@
         
         if (permission === "granted") {
           notificationsEnabled = true;
+          
+          // Register for push notifications if service worker is available
+          if ('serviceWorker' in navigator && 'PushManager' in window) {
+            try {
+              const registration = await navigator.serviceWorker.ready;
+              console.log('Service worker ready for notifications');
+            } catch (err) {
+              console.log('Service worker issue:', err);
+            }
+          }
+          
           showToast("Notifications enabled!");
           saveToStorage();
           updateSettingsUI();
+          scheduleNextNotifications();
         } else {
           showToast("Notification permission denied");
         }
@@ -1210,6 +1237,62 @@
         showToast("Notifications disabled");
         saveToStorage();
         updateSettingsUI();
+      }
+    }
+    
+    function scheduleNextNotifications() {
+      if (!notificationsEnabled) return;
+      
+      const now = new Date();
+      const today = getTodayEntries();
+      
+      // Calculate next morning time
+      const morningTime = new Date();
+      const [mHour, mMin] = morningReminderTime.split(':');
+      morningTime.setHours(parseInt(mHour), parseInt(mMin), 0, 0);
+      
+      // If morning time has passed today and morning is done, schedule for tomorrow
+      if (morningTime < now || today.morning) {
+        morningTime.setDate(morningTime.getDate() + 1);
+      }
+      
+      // Calculate next evening time  
+      const eveningTime = new Date();
+      const [eHour, eMin] = eveningReminderTime.split(':');
+      eveningTime.setHours(parseInt(eHour), parseInt(eMin), 0, 0);
+      
+      // If evening time has passed today or evening is done, schedule for tomorrow
+      if (eveningTime < now || today.evening) {
+        eveningTime.setDate(eveningTime.getDate() + 1);
+      }
+      
+      // Schedule via service worker if available
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          // Schedule morning notification if not done today
+          if (!today.morning) {
+            registration.active.postMessage({
+              type: 'SCHEDULE_NOTIFICATION',
+              title: '🔥 Morning Check-In',
+              body: 'Your life matters. Your time is limited. Start your day with intention.',
+              notifyAt: morningTime.getTime()
+            });
+            console.log('Morning notification scheduled for:', morningTime.toLocaleString());
+          }
+          
+          // Schedule evening notification if morning is done but not evening
+          if (today.morning && !today.evening) {
+            registration.active.postMessage({
+              type: 'SCHEDULE_NOTIFICATION',
+              title: '🌙 Evening Reflection',
+              body: 'Did you do what you said you\'d do? Complete your evening check-in.',
+              notifyAt: eveningTime.getTime()
+            });
+            console.log('Evening notification scheduled for:', eveningTime.toLocaleString());
+          }
+        }).catch(err => {
+          console.error('Failed to schedule notifications:', err);
+        });
       }
     }
     
@@ -1246,7 +1329,8 @@
       morningReminderTime = document.getElementById('morningTime').value;
       eveningReminderTime = document.getElementById('eveningTime').value;
       saveToStorage();
-      showToast('Reminder times saved. You will be notified at ' + morningReminderTime + ' and ' + eveningReminderTime);
+      scheduleNextNotifications(); // Reschedule with new times
+      showToast('Reminder times saved. Notifications rescheduled for ' + morningReminderTime + ' and ' + eveningReminderTime);
     }
     
     function testNotification() {
