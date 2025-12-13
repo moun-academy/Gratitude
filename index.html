@@ -116,7 +116,8 @@
     }
     
     .nav-tabs {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
       margin-bottom: 32px;
       background: var(--bg-card);
@@ -499,6 +500,15 @@
       .stats-bar {
         grid-template-columns: 1fr;
       }
+      
+      .nav-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .nav-tab {
+        font-size: 0.85rem;
+        padding: 12px 10px;
+      }
     }
   </style>
 </head>
@@ -748,6 +758,12 @@
             <label class="question-label">Evening Reminder</label>
             <p class="question-hint">When should we remind you to do your evening reflection?</p>
             <input type="time" class="input-text" id="eveningTime" value="21:00" style="font-size: 1.1rem; padding: 16px;" />
+          </div>
+          
+          <div class="question-block">
+            <label class="question-label">Test Notification</label>
+            <p class="question-hint">Send a test notification right now to make sure it's working</p>
+            <button class="btn" onclick="testNotification()" style="background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border);">Send Test Notification</button>
           </div>
           
           <button class="btn" onclick="saveNotificationSettings()">Save Reminder Times</button>
@@ -1230,39 +1246,71 @@
       morningReminderTime = document.getElementById('morningTime').value;
       eveningReminderTime = document.getElementById('eveningTime').value;
       saveToStorage();
-      showToast('Reminder times saved');
+      showToast('Reminder times saved. You will be notified at ' + morningReminderTime + ' and ' + eveningReminderTime);
+    }
+    
+    function testNotification() {
+      if (!notificationsEnabled) {
+        showToast('Enable notifications first');
+        return;
+      }
+      
+      if (!("Notification" in window)) {
+        showToast("This browser doesn't support notifications");
+        return;
+      }
+      
+      if (Notification.permission !== "granted") {
+        showToast("Notification permission not granted");
+        return;
+      }
+      
+      sendNotification(
+        '🎯 Test Notification',
+        'Your notifications are working! You will receive reminders at your set times.',
+        'settings'
+      );
+      showToast('Test notification sent!');
     }
     
     function startNotificationChecker() {
-      // Check every minute if it's time to send a notification
-      notificationCheckInterval = setInterval(checkAndSendNotifications, 60000);
+      // Check every 30 seconds if it's time to send a notification (more responsive)
+      notificationCheckInterval = setInterval(checkAndSendNotifications, 30000);
       // Also check immediately
       checkAndSendNotifications();
     }
     
     function checkAndSendNotifications() {
       if (!notificationsEnabled) return;
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
       
       const now = new Date();
       const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const today = getTodayEntries();
       
+      // Check if we've already sent a notification in the last 5 minutes to avoid duplicates
+      const lastMorningNotif = window.lastMorningNotification || 0;
+      const lastEveningNotif = window.lastEveningNotification || 0;
+      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+      
       // Morning reminder
-      if (currentTime === morningReminderTime && !today.morning) {
+      if (currentTime === morningReminderTime && !today.morning && lastMorningNotif < fiveMinutesAgo) {
         sendNotification(
           '🔥 Morning Check-In',
           'Your life matters. Your time is limited. Start your day with intention.',
           'morning'
         );
+        window.lastMorningNotification = Date.now();
       }
       
       // Evening reminder
-      if (currentTime === eveningReminderTime && today.morning && !today.evening) {
+      if (currentTime === eveningReminderTime && today.morning && !today.evening && lastEveningNotif < fiveMinutesAgo) {
         sendNotification(
           '🌙 Evening Reflection',
           'Did you do what you said you\'d do? Complete your evening check-in.',
           'evening'
         );
+        window.lastEveningNotification = Date.now();
       }
     }
     
