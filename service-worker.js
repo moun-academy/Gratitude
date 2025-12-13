@@ -1,5 +1,5 @@
 // Identity Forge Service Worker
-const CACHE_NAME = 'identity-forge-v1';
+const CACHE_NAME = 'identity-forge-v2';
 const scheduledNotifications = new Map();
 
 // Install
@@ -8,10 +8,21 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate
+// Activate - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('Identity Forge SW: Activating...');
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => {
+            console.log('Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 // Listen for notification scheduling from main app
@@ -36,8 +47,8 @@ function scheduleNotification(title, body, notifyAt) {
     const timeoutId = setTimeout(() => {
       self.registration.showNotification(title, {
         body: body,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-192x192.png',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
         vibrate: [200, 100, 200],
         tag: 'identity-forge-reminder',
         requireInteraction: true, // Makes it stay until dismissed
@@ -69,24 +80,32 @@ function scheduleNotification(title, body, notifyAt) {
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
-  if (event.action === 'open' || !event.action) {
-    event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true })
-        .then(clientList => {
-          // If app is already open, focus it
-          for (let client of clientList) {
-            if (client.url === '/' && 'focus' in client) {
-              return client.focus();
-            }
-          }
-          // Otherwise open new window
-          if (clients.openWindow) {
-            return clients.openWindow('/');
-          }
-        })
-    );
+
+  if (event.action === 'dismiss') {
+    return; // Just close the notification
   }
+
+  // Open or focus the app
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        // Try to find and focus an existing window
+        for (let client of clientList) {
+          if ('focus' in client) {
+            return client.focus();
+          }
+        }
+        // Otherwise open new window
+        if (clients.openWindow) {
+          return clients.openWindow('/');
+        }
+      })
+  );
+});
+
+// Handle notification close (for analytics/tracking if needed)
+self.addEventListener('notificationclose', (event) => {
+  console.log('Notification closed:', event.notification.tag);
 });
 
 // Keep service worker alive

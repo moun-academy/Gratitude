@@ -1208,28 +1208,36 @@
           showToast("This browser doesn't support notifications");
           return;
         }
-        
+
+        // Check if service worker is available (required for Samsung)
+        if (!('serviceWorker' in navigator)) {
+          showToast("Service workers not supported. Try Chrome or Samsung Internet.");
+          return;
+        }
+
+        showToast("Requesting permission...");
+
         const permission = await Notification.requestPermission();
-        
+
         if (permission === "granted") {
-          notificationsEnabled = true;
-          
-          // Register for push notifications if service worker is available
-          if ('serviceWorker' in navigator && 'PushManager' in window) {
-            try {
-              const registration = await navigator.serviceWorker.ready;
-              console.log('Service worker ready for notifications');
-            } catch (err) {
-              console.log('Service worker issue:', err);
-            }
+          // Wait for service worker to be ready
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            console.log('Service worker ready for notifications');
+
+            notificationsEnabled = true;
+            showToast("Notifications enabled! Tap 'Test' to verify.");
+            saveToStorage();
+            updateSettingsUI();
+            scheduleNextNotifications();
+          } catch (err) {
+            console.error('Service worker issue:', err);
+            showToast("Service worker error. Try refreshing the page.");
           }
-          
-          showToast("Notifications enabled!");
-          saveToStorage();
-          updateSettingsUI();
-          scheduleNextNotifications();
+        } else if (permission === "denied") {
+          showToast("Permission denied. Enable in browser settings > Site settings > Notifications");
         } else {
-          showToast("Notification permission denied");
+          showToast("Permission dismissed. Try again.");
         }
       } else {
         // Disable notifications
@@ -1333,89 +1341,187 @@
       showToast('Reminder times saved. Notifications rescheduled for ' + morningReminderTime + ' and ' + eveningReminderTime);
     }
     
-    function testNotification() {
+    async function testNotification() {
       if (!notificationsEnabled) {
         showToast('Enable notifications first');
         return;
       }
-      
+
       if (!("Notification" in window)) {
         showToast("This browser doesn't support notifications");
         return;
       }
-      
+
       if (Notification.permission !== "granted") {
-        showToast("Notification permission not granted");
+        showToast("Notification permission not granted. Please enable in browser settings.");
         return;
       }
-      
-      sendNotification(
-        '🎯 Test Notification',
+
+      // Check if service worker is ready (required for Samsung)
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          if (!registration.active) {
+            showToast("Service worker not active. Try refreshing the page.");
+            return;
+          }
+        } catch (err) {
+          showToast("Service worker error: " + err.message);
+          return;
+        }
+      }
+
+      showToast('Sending notification...');
+
+      await sendNotification(
+        'Test Notification',
         'Your notifications are working! You will receive reminders at your set times.',
         'settings'
       );
-      showToast('Test notification sent!');
+
+      // Delay the success message so user sees the notification first
+      setTimeout(() => {
+        showToast('Notification sent! Check your notification panel.');
+      }, 500);
     }
     
     function startNotificationChecker() {
-      // Check every 30 seconds if it's time to send a notification (more responsive)
-      notificationCheckInterval = setInterval(checkAndSendNotifications, 30000);
-      // Also check immediately
+      // Check every 15 seconds for notifications
+      notificationCheckInterval = setInterval(checkAndSendNotifications, 15000);
+      // Check immediately
       checkAndSendNotifications();
+
+      // Also check when app becomes visible (user returns to app)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('App visible, checking for missed notifications...');
+          checkAndSendNotifications();
+        }
+      });
+
+      // Check when window gets focus
+      window.addEventListener('focus', () => {
+        console.log('Window focused, checking notifications...');
+        checkAndSendNotifications();
+      });
     }
-    
+
+    // Helper to parse time string to minutes since midnight
+    function timeToMinutes(timeStr) {
+      const [hours, mins] = timeStr.split(':').map(Number);
+      return hours * 60 + mins;
+    }
+
+    // Helper to get today's date string for storage keys
+    function getTodayDateString() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    // Load last notification times from storage
+    function getLastNotificationTime(type) {
+      const key = `lastNotif_${type}_${getTodayDateString()}`;
+      const stored = localStorage.getItem(key);
+      return stored ? parseInt(stored, 10) : 0;
+    }
+
+    // Save last notification time to storage
+    function setLastNotificationTime(type) {
+      const key = `lastNotif_${type}_${getTodayDateString()}`;
+      localStorage.setItem(key, Date.now().toString());
+    }
+
     function checkAndSendNotifications() {
       if (!notificationsEnabled) return;
       if (!("Notification" in window) || Notification.permission !== "granted") return;
-      
+
       const now = new Date();
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const today = getTodayEntries();
-      
-      // Check if we've already sent a notification in the last 5 minutes to avoid duplicates
-      const lastMorningNotif = window.lastMorningNotification || 0;
-      const lastEveningNotif = window.lastEveningNotification || 0;
-      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-      
-      // Morning reminder
-      if (currentTime === morningReminderTime && !today.morning && lastMorningNotif < fiveMinutesAgo) {
+
+      const morningMinutes = timeToMinutes(morningReminderTime);
+      const eveningMinutes = timeToMinutes(eveningReminderTime);
+
+      // Use a 5-minute window to catch notifications even if check was delayed
+      const WINDOW_MINUTES = 5;
+
+      // Check if we've already sent today (persisted in localStorage)
+      const lastMorningNotif = getLastNotificationTime('morning');
+      const lastEveningNotif = getLastNotificationTime('evening');
+      const tenMinutesAgo = Date.now() - (10 * 60 * 1000);
+
+      // Morning reminder - trigger if within window and not already sent today
+      const morningDiff = currentMinutes - morningMinutes;
+      if (morningDiff >= 0 && morningDiff <= WINDOW_MINUTES && !today.morning && lastMorningNotif < tenMinutesAgo) {
+        console.log('Sending morning notification...');
         sendNotification(
-          '🔥 Morning Check-In',
+          'Morning Check-In',
           'Your life matters. Your time is limited. Start your day with intention.',
           'morning'
         );
-        window.lastMorningNotification = Date.now();
+        setLastNotificationTime('morning');
       }
-      
-      // Evening reminder
-      if (currentTime === eveningReminderTime && today.morning && !today.evening && lastEveningNotif < fiveMinutesAgo) {
+
+      // Evening reminder - trigger if within window and morning is done
+      const eveningDiff = currentMinutes - eveningMinutes;
+      if (eveningDiff >= 0 && eveningDiff <= WINDOW_MINUTES && today.morning && !today.evening && lastEveningNotif < tenMinutesAgo) {
+        console.log('Sending evening notification...');
         sendNotification(
-          '🌙 Evening Reflection',
+          'Evening Reflection',
           'Did you do what you said you\'d do? Complete your evening check-in.',
           'evening'
         );
-        window.lastEveningNotification = Date.now();
+        setLastNotificationTime('evening');
       }
     }
     
-    function sendNotification(title, body, type) {
+    async function sendNotification(title, body, type) {
       if (!("Notification" in window) || Notification.permission !== "granted") {
+        console.log('Notification permission not granted');
         return;
       }
-      
-      const notification = new Notification(title, {
-        body: body,
-        icon: '🎯',
-        badge: '🎯',
-        requireInteraction: false,
-        silent: false
-      });
-      
-      notification.onclick = function() {
-        window.focus();
-        switchView(type);
-        notification.close();
-      };
+
+      // Use Service Worker for notifications (required for Samsung/Android)
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification(title, {
+            body: body,
+            icon: '/icons/icon-192.png',
+            badge: '/icons/icon-192.png',
+            vibrate: [200, 100, 200, 100, 200],
+            tag: 'identity-forge-' + type,
+            requireInteraction: true,
+            actions: [
+              { action: 'open', title: 'Open App' },
+              { action: 'dismiss', title: 'Dismiss' }
+            ],
+            data: { type: type }
+          });
+          console.log('Notification sent via Service Worker');
+          return;
+        } catch (err) {
+          console.error('Service Worker notification failed:', err);
+        }
+      }
+
+      // Fallback to direct notification (desktop browsers)
+      try {
+        const notification = new Notification(title, {
+          body: body,
+          icon: '/icons/icon-192.png',
+          badge: '/icons/icon-192.png',
+          requireInteraction: false,
+          silent: false
+        });
+
+        notification.onclick = function() {
+          window.focus();
+          switchView(type);
+          notification.close();
+        };
+      } catch (err) {
+        console.error('Direct notification failed:', err);
+      }
     }
     
     // Data management
