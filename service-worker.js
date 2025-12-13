@@ -1,5 +1,5 @@
 // Identity Forge Service Worker
-const CACHE_NAME = 'identity-forge-v1';
+const CACHE_NAME = 'identity-forge-v2';
 const scheduledNotifications = new Map();
 
 // Install
@@ -8,10 +8,21 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate
+// Activate - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('Identity Forge SW: Activating...');
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => {
+            console.log('Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 // Listen for notification scheduling from main app
@@ -36,8 +47,8 @@ function scheduleNotification(title, body, notifyAt) {
     const timeoutId = setTimeout(() => {
       self.registration.showNotification(title, {
         body: body,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-192x192.png',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
         vibrate: [200, 100, 200],
         tag: 'identity-forge-reminder',
         requireInteraction: true, // Makes it stay until dismissed

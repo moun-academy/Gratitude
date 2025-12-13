@@ -1486,8 +1486,8 @@
           const registration = await navigator.serviceWorker.ready;
           await registration.showNotification(title, {
             body: body,
-            icon: '/icons/icon-192x192.png',
-            badge: '/icons/icon-192x192.png',
+            icon: '/icons/icon-192.png',
+            badge: '/icons/icon-192.png',
             vibrate: [200, 100, 200, 100, 200],
             tag: 'identity-forge-' + type,
             requireInteraction: true,
@@ -1508,8 +1508,8 @@
       try {
         const notification = new Notification(title, {
           body: body,
-          icon: '/icons/icon-192x192.png',
-          badge: '/icons/icon-192x192.png',
+          icon: '/icons/icon-192.png',
+          badge: '/icons/icon-192.png',
           requireInteraction: false,
           silent: false
         });
