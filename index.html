@@ -1257,7 +1257,46 @@
           <button class="btn" onclick="saveNotificationSettings()">Save Reminder Times</button>
         </div>
       </div>
-      
+
+      <!-- AI Personalization Settings -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🤖</span>
+          <h2 class="section-title">AI Personalization</h2>
+        </div>
+
+        <div class="question-block">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <label class="question-label" style="margin: 0;">Enable AI Insights</label>
+            <button class="yes-no-btn" id="aiToggle" onclick="toggleAI()" style="width: 120px; padding: 10px;">
+              <span id="aiStatus">OFF</span>
+            </button>
+          </div>
+          <p class="question-hint" id="aiHint">Uses OpenAI to generate personalized morning insights based on your patterns</p>
+        </div>
+
+        <div id="aiSettings" style="display: none;">
+          <div class="question-block">
+            <label class="question-label">OpenAI API Key</label>
+            <p class="question-hint">Get your key from platform.openai.com/api-keys</p>
+            <input type="password" class="input-text" id="openaiApiKey" placeholder="sk-proj-..." style="font-family: monospace;" />
+          </div>
+
+          <div class="question-block">
+            <label class="question-label">Test AI Generation</label>
+            <p class="question-hint">Verify your API key works and see a sample insight</p>
+            <button class="btn" onclick="testAI()" style="background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border);">Generate Test Insight</button>
+          </div>
+
+          <button class="btn" onclick="saveAISettings()">Save AI Settings</button>
+        </div>
+
+        <div class="question-block" style="margin-top: 20px;">
+          <label class="question-label">Cost Estimate</label>
+          <p class="question-hint">Using gpt-4o-mini: ~$0.0005 per morning insight (about $0.15/month)</p>
+        </div>
+      </div>
+
       <div class="section">
         <div class="section-header">
           <span class="section-icon">💾</span>
@@ -1408,7 +1447,7 @@
   
   <script>
     // App Version - Update this timestamp when making changes
-    const APP_VERSION = 'v2025-12-14 01:30';
+    const APP_VERSION = 'v2025-12-14 02:00';
 
     // Register Service Worker for PWA notifications
     if ('serviceWorker' in navigator) {
@@ -1462,12 +1501,296 @@
     let morningReminderTime = '07:00';
     let eveningReminderTime = '21:00';
     let notificationCheckInterval = null;
-    
+
+    // ============================================
+    // AI PERSONALIZATION FUNCTIONS
+    // ============================================
+
+    function isAIEnabled() {
+      const enabled = localStorage.getItem('aiPersonalizationEnabled') === 'true';
+      const apiKey = localStorage.getItem('openaiApiKey');
+      return enabled && apiKey && apiKey.length > 0;
+    }
+
+    function aiAverage(arr, field) {
+      if (arr.length === 0) return 0;
+      const sum = arr.reduce((acc, item) => acc + (item[field] || 0), 0);
+      return sum / arr.length;
+    }
+
+    function buildUserContext() {
+      const last14Entries = entries.slice(-14);
+      const morningEntries = last14Entries.filter(e => e.type === 'morning');
+      const eveningEntries = last14Entries.filter(e => e.type === 'evening');
+
+      const declarations = morningEntries.map(e => e.identityDeclaration).filter(d => d);
+      const actions = morningEntries.map(e => e.proofAction).filter(a => a);
+
+      const completed = eveningEntries.filter(e => e.didIt).length;
+      const total = eveningEntries.length;
+      const followThroughRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      const excuses = eveningEntries.filter(e => !e.didIt && e.accountabilityWhy).map(e => e.accountabilityWhy);
+
+      const avgEnergy = aiAverage(morningEntries, 'energy');
+      const avgOptimism = aiAverage(morningEntries, 'optimism');
+      const avgConfidence = aiAverage(morningEntries, 'confidence');
+
+      return {
+        declarations,
+        actions,
+        completed,
+        total,
+        followThroughRate,
+        excuses,
+        avgEnergy: avgEnergy.toFixed(1),
+        avgOptimism: avgOptimism.toFixed(1),
+        avgConfidence: avgConfidence.toFixed(1),
+        streak: calculateStreak(),
+        totalDays: Math.floor(entries.length / 2)
+      };
+    }
+
+    async function generatePersonalizedMorning() {
+      const apiKey = localStorage.getItem('openaiApiKey');
+      if (!apiKey) return null;
+
+      const context = buildUserContext();
+
+      const userPrompt = `Analyze Marouane's patterns from the last 7 days:
+
+DECLARATIONS (what he said he'd be):
+${JSON.stringify(context.declarations)}
+
+ACTIONS (what he said he'd do):
+${JSON.stringify(context.actions)}
+
+FOLLOW-THROUGH:
+- Completed: ${context.completed} out of ${context.total}
+- Follow-through rate: ${context.followThroughRate}%
+
+EXCUSES (when he failed):
+${JSON.stringify(context.excuses)}
+
+SCORES:
+- Average Energy: ${context.avgEnergy} / 10
+- Average Optimism: ${context.avgOptimism} / 10
+- Average Confidence: ${context.avgConfidence} / 10
+- Current Streak: ${context.streak} days
+
+CONTEXT:
+- Total days tracking: ${context.totalDays}
+
+Based on this data, identify the BIGGEST gap between what he says and what he does.
+
+Generate a personalized morning truth that:
+1. Calls out his specific pattern using his actual data
+2. References his mother's belief, his son watching, or his wealth
+3. Uses confrontational but not cruel language
+4. Is 2-4 sentences max
+5. Uses his language: fire, demon, prison, invisible, hiding, sweating
+
+Also generate:
+1. One confrontational question (1 sentence)
+2. One specific action for today that directly addresses what he's avoiding (1 sentence)
+
+Return ONLY valid JSON (no markdown):
+{
+  "truth": "your personalized truth here",
+  "question": "your confrontational question here",
+  "action": "your specific action here"
+}`;
+
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              {
+                role: 'system',
+                content: "You are Marouane's brutally honest accountability coach. You know his story: He's 33, struggles with severe shyness and sweating in social situations, hides in bathrooms, stays silent in meetings. His mother named MOUN Academy after herself believing in him. He has a son watching him. He says he values courage but chooses comfort. He is already wealthy (family, health, education, peace) but feels entitled. Be direct, confrontational but not cruel. Use his language: fire, demon of shyness, prison, invisible, hiding. Reference his mother's belief and his son's future."
+              },
+              {
+                role: 'user',
+                content: userPrompt
+              }
+            ],
+            temperature: 0.85,
+            max_tokens: 400,
+            response_format: { type: "json_object" }
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          console.error('OpenAI API error:', data.error);
+          showToast('AI generation failed: ' + data.error.message);
+          return null;
+        }
+
+        const content = data.choices[0].message.content;
+        const insights = JSON.parse(content);
+
+        if (!insights.truth || !insights.question || !insights.action) {
+          console.error('Invalid AI response format');
+          return null;
+        }
+
+        return insights;
+
+      } catch (error) {
+        console.error('Failed to generate AI insights:', error);
+        showToast('AI generation failed. Check your API key.');
+        return null;
+      }
+    }
+
+    async function loadAIMorningContent() {
+      // Check if user has enough data (at least 3 days)
+      const morningEntries = entries.filter(e => e.type === 'morning');
+      if (morningEntries.length < 3) {
+        loadDailyContent();
+        if (isAIEnabled()) {
+          document.getElementById('dailyTruth').innerHTML = '<em style="color: var(--text-secondary);">AI needs at least 3 days of data. Keep tracking!</em>';
+        }
+        return;
+      }
+
+      if (!isAIEnabled()) {
+        loadDailyContent();
+        return;
+      }
+
+      // Check sessionStorage cache first
+      const cachedInsights = sessionStorage.getItem('todayAIInsights');
+      const cacheDate = sessionStorage.getItem('todayAIInsightsDate');
+      const today = new Date().toDateString();
+
+      if (cachedInsights && cacheDate === today) {
+        const insights = JSON.parse(cachedInsights);
+        document.getElementById('dailyTruth').textContent = insights.truth;
+        document.getElementById('dailyQuestion').textContent = insights.question;
+        const actionField = document.getElementById('proofAction');
+        if (actionField && !actionField.value) {
+          actionField.value = insights.action;
+        }
+        return;
+      }
+
+      // Show loading state
+      document.getElementById('dailyTruth').innerHTML = '<em style="color: var(--text-secondary);">Analyzing your patterns...</em>';
+      document.getElementById('dailyQuestion').innerHTML = '<em style="color: var(--text-secondary);">Generating personalized insight...</em>';
+
+      const insights = await generatePersonalizedMorning();
+
+      if (!insights) {
+        loadDailyContent();
+        showToast('AI failed. Using static content.');
+        return;
+      }
+
+      document.getElementById('dailyTruth').textContent = insights.truth;
+      document.getElementById('dailyQuestion').textContent = insights.question;
+
+      const actionField = document.getElementById('proofAction');
+      if (actionField && !actionField.value) {
+        actionField.value = insights.action;
+      }
+
+      // Cache in sessionStorage
+      sessionStorage.setItem('todayAIInsights', JSON.stringify(insights));
+      sessionStorage.setItem('todayAIInsightsDate', today);
+    }
+
+    // AI Settings Functions
+    function toggleAI() {
+      const currentState = localStorage.getItem('aiPersonalizationEnabled') === 'true';
+      const newState = !currentState;
+      localStorage.setItem('aiPersonalizationEnabled', String(newState));
+      updateAISettingsUI();
+      showToast(newState ? 'AI Personalization enabled' : 'AI Personalization disabled');
+    }
+
+    function updateAISettingsUI() {
+      const enabled = localStorage.getItem('aiPersonalizationEnabled') === 'true';
+      const toggle = document.getElementById('aiToggle');
+      const status = document.getElementById('aiStatus');
+      const settings = document.getElementById('aiSettings');
+      const hint = document.getElementById('aiHint');
+
+      if (!toggle || !status || !settings || !hint) return;
+
+      if (enabled) {
+        toggle.classList.add('selected');
+        status.textContent = 'ON';
+        settings.style.display = 'block';
+        hint.textContent = 'AI will analyze your patterns and generate personalized insights';
+      } else {
+        toggle.classList.remove('selected');
+        status.textContent = 'OFF';
+        settings.style.display = 'none';
+        hint.textContent = 'Uses OpenAI to generate personalized morning insights';
+      }
+
+      const apiKey = localStorage.getItem('openaiApiKey');
+      const apiKeyInput = document.getElementById('openaiApiKey');
+      if (apiKey && apiKeyInput) {
+        apiKeyInput.value = apiKey;
+      }
+    }
+
+    function saveAISettings() {
+      const apiKey = document.getElementById('openaiApiKey').value.trim();
+
+      if (!apiKey) {
+        showToast('Please enter an API key');
+        return;
+      }
+
+      if (!apiKey.startsWith('sk-')) {
+        showToast('Invalid API key format (should start with sk-)');
+        return;
+      }
+
+      localStorage.setItem('openaiApiKey', apiKey);
+      showToast('API key saved securely');
+    }
+
+    async function testAI() {
+      const apiKey = localStorage.getItem('openaiApiKey');
+
+      if (!apiKey) {
+        showToast('Enter and save your API key first');
+        return;
+      }
+
+      showToast('Generating test insight...');
+
+      const insights = await generatePersonalizedMorning();
+
+      if (insights) {
+        alert(`AI Test Success!\n\nTruth: ${insights.truth}\n\nQuestion: ${insights.question}\n\nAction: ${insights.action}`);
+        showToast('AI is working!');
+      } else {
+        showToast('AI test failed. Check console for errors.');
+      }
+    }
+
+    // ============================================
+    // END AI PERSONALIZATION FUNCTIONS
+    // ============================================
+
     // Initialize
     function init() {
       console.log(`🔥 Identity Forge ${APP_VERSION} - App loaded successfully`);
       setupSliders();
-      loadDailyContent();
+      loadAIMorningContent(); // Uses AI if enabled, falls back to static content
       updateStats();
       checkEveningAvailability();
       loadNotificationSettings();
@@ -1551,6 +1874,7 @@
         displayHistory();
       } else if (viewName === 'settings') {
         updateSettingsUI();
+        updateAISettingsUI();
       } else if (viewName === 'ground') {
         initGroundView();
       }
