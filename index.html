@@ -183,7 +183,7 @@
     
     .nav-tabs {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
       margin-bottom: 32px;
       background: linear-gradient(135deg, var(--bg-card) 0%, rgba(21, 21, 21, 0.95) 100%);
@@ -191,6 +191,10 @@
       border-radius: 16px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
+    }
+
+    .nav-icon {
+      display: none;
     }
 
     .nav-tab {
@@ -722,31 +726,276 @@
       .app-container {
         padding: 12px;
       }
-      
+
       .header {
         padding: 40px 12px 30px;
       }
-      
+
       .header h1 {
         font-size: 2rem;
       }
-      
+
       .section {
         padding: 24px 20px;
       }
-      
+
       .stats-bar {
         grid-template-columns: 1fr;
       }
-      
+
       .nav-tabs {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
-      
+
       .nav-tab {
-        font-size: 0.85rem;
-        padding: 12px 10px;
+        font-size: 0.8rem;
+        padding: 12px 8px;
       }
+
+      .nav-icon {
+        display: inline;
+        margin-right: 2px;
+      }
+    }
+
+    /* Ground/Reality Check Styles */
+    .ground-container {
+      position: relative;
+      min-height: 400px;
+    }
+
+    .ground-screen {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .ground-screen.active {
+      display: block;
+    }
+
+    .ground-progress {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .ground-progress-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .ground-progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-dark);
+      border-radius: 3px;
+      margin: 0 16px;
+      overflow: hidden;
+    }
+
+    .ground-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .ground-question-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .ground-yes-no {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .ground-yes-no .yes-no-btn {
+      flex: 1;
+      padding: 20px;
+      font-size: 1.1rem;
+      min-height: 60px;
+    }
+
+    .ground-response {
+      animation: fadeIn 0.3s ease;
+    }
+
+    .ground-truth {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 149, 0, 0.05) 100%);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+    }
+
+    .ground-commitment-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .ground-mode-card {
+      background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(26, 26, 26, 0.9) 100%);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+    }
+
+    .ground-mode-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .ground-mode-card:active {
+      transform: translateY(-2px);
+    }
+
+    .ground-mode-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .ground-mode-desc {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .ground-summary {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .ground-summary-count {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .ground-summary-label {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .ground-summary-message {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+      padding: 24px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .ground-summary-message strong {
+      color: var(--accent);
+      display: block;
+      margin: 16px 0 8px;
+    }
+
+    .ground-meta {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+
+    .ground-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ground-btn-secondary {
+      width: 100%;
+      padding: 16px;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .ground-btn-secondary:hover {
+      border-color: var(--accent);
+      background: var(--bg-dark);
+    }
+
+    .ground-exit-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 8px 16px;
+      transition: color 0.2s ease;
+    }
+
+    .ground-exit-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .ground-last-check {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .ground-commitments-list {
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .ground-commitment-item {
+      padding: 16px;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .ground-commitment-q {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .ground-commitment-a {
+      font-size: 1rem;
+      color: var(--text-primary);
     }
   </style>
 </head>
@@ -784,6 +1033,7 @@
       <button class="nav-tab active" onclick="switchView('morning')">Morning</button>
       <button class="nav-tab" onclick="switchView('evening')">Evening</button>
       <button class="nav-tab" onclick="switchView('history')">History</button>
+      <button class="nav-tab" onclick="switchView('ground')"><span class="nav-icon">⚖️</span> Ground</button>
       <button class="nav-tab" onclick="switchView('settings')">Settings</button>
     </nav>
     
@@ -1040,6 +1290,116 @@
             <span style="font-size: 1.2rem; font-weight: 700; color: var(--accent);" id="appVersion">Loading...</span>
           </div>
         </div>
+
+        <div class="question-block">
+          <label class="question-label">Gratitude Grounding</label>
+          <p class="question-hint">Last reality check to remind yourself of your wealth</p>
+          <div style="padding: 16px; background: var(--bg-elevated); border-radius: 8px; border: 1px solid var(--border);">
+            <span id="lastGroundCheck">Never completed</span>
+          </div>
+          <button class="btn" onclick="switchView('ground')" style="background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); margin-top: 12px;">
+            Take Reality Check
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUND VIEW (Reality Check) -->
+    <div id="ground" class="view">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">⚖️</span>
+          <h2 class="section-title">Reality Check</h2>
+        </div>
+
+        <div class="ground-container">
+          <!-- Mode Selection Screen -->
+          <div id="groundModeSelect" class="ground-screen active">
+            <p class="ground-last-check" id="groundLastCheckDisplay">Last check: Never</p>
+
+            <div class="ground-mode-card" onclick="startGroundCheck('quick')">
+              <div class="ground-mode-title">Quick Mode</div>
+              <div class="ground-mode-desc">5 random questions (~3 minutes)</div>
+            </div>
+
+            <div class="ground-mode-card" onclick="startGroundCheck('full')">
+              <div class="ground-mode-title">Full Mode</div>
+              <div class="ground-mode-desc">All 15 questions (~10 minutes)</div>
+            </div>
+
+            <div id="groundResumeOption" style="display: none; margin-top: 24px;">
+              <button class="ground-btn-secondary" onclick="resumeGroundCheck()">
+                Resume Previous Check
+              </button>
+            </div>
+          </div>
+
+          <!-- Question Screen -->
+          <div id="groundQuestion" class="ground-screen">
+            <button class="ground-exit-btn" onclick="exitGroundCheck()">Exit</button>
+
+            <div class="ground-progress">
+              <span class="ground-progress-text" id="groundProgressText">1 / 15</span>
+              <div class="ground-progress-bar">
+                <div class="ground-progress-fill" id="groundProgressFill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="ground-question-text" id="groundQuestionText">Loading...</div>
+
+            <div class="ground-yes-no">
+              <button class="yes-no-btn" id="groundYes" onclick="groundAnswer('yes')">YES</button>
+              <button class="yes-no-btn" id="groundNo" onclick="groundAnswer('no')">NO</button>
+            </div>
+
+            <div id="groundResponseArea" class="ground-response" style="display: none;">
+              <div class="ground-truth" id="groundTruthText"></div>
+
+              <label class="ground-commitment-label" id="groundCommitmentLabel">Name one way you will respect this gift today.</label>
+              <input type="text" class="input-text" id="groundCommitmentInput" placeholder="I will..." />
+
+              <button class="btn" id="groundNextBtn" onclick="groundNext()" style="display: none;">Next</button>
+            </div>
+          </div>
+
+          <!-- Summary Screen -->
+          <div id="groundSummary" class="ground-screen">
+            <div class="ground-summary">
+              <div class="ground-summary-count" id="groundWealthCount">0</div>
+              <div class="ground-summary-label">forms of wealth acknowledged</div>
+
+              <div class="ground-summary-message">
+                Billions will never have them.<br><br>
+                You are not owed anything.<br>
+                You were given a lot.<br><br>
+                <strong>You owe life a response.</strong>
+                What will you do with it today?
+              </div>
+
+              <div class="ground-meta">
+                <div>Wealth forms: <span id="groundSummaryWealth">0</span> / <span id="groundSummaryTotal">15</span></div>
+                <div>Completed: <span id="groundSummaryDate">-</span></div>
+              </div>
+
+              <div class="ground-btn-group">
+                <button class="ground-btn-secondary" onclick="viewGroundCommitments()">View My Commitments</button>
+                <button class="btn" onclick="resetGroundCheck()">Start Again</button>
+                <button class="ground-btn-secondary" onclick="switchView('morning')">Done</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Commitments View Screen -->
+          <div id="groundCommitments" class="ground-screen">
+            <button class="ground-exit-btn" onclick="showGroundSummary()">← Back</button>
+
+            <h3 style="margin-bottom: 24px; color: var(--text-primary);">Your Commitments</h3>
+
+            <div class="ground-commitments-list" id="groundCommitmentsList"></div>
+
+            <button class="ground-btn-secondary" onclick="showGroundSummary()" style="margin-top: 24px;">Back to Summary</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1048,7 +1408,7 @@
   
   <script>
     // App Version - Update this timestamp when making changes
-    const APP_VERSION = 'v2025-12-14 00:45';
+    const APP_VERSION = 'v2025-12-14 01:30';
 
     // Register Service Worker for PWA notifications
     if ('serviceWorker' in navigator) {
@@ -1171,19 +1531,28 @@
     function switchView(viewName) {
       const tabs = document.querySelectorAll('.nav-tab');
       const views = document.querySelectorAll('.view');
-      
+
       tabs.forEach(tab => tab.classList.remove('active'));
       views.forEach(view => view.classList.remove('active'));
-      
-      event.target.classList.add('active');
+
+      // Find and activate the correct tab
+      tabs.forEach(tab => {
+        if (tab.textContent.toLowerCase().includes(viewName.toLowerCase()) ||
+            (viewName === 'ground' && tab.textContent.includes('Ground'))) {
+          tab.classList.add('active');
+        }
+      });
+
       document.getElementById(viewName).classList.add('active');
-      
+
       if (viewName === 'evening') {
         checkEveningAvailability();
       } else if (viewName === 'history') {
         displayHistory();
       } else if (viewName === 'settings') {
         updateSettingsUI();
+      } else if (viewName === 'ground') {
+        initGroundView();
       }
     }
     
@@ -1628,6 +1997,9 @@
       if (versionElement) {
         versionElement.textContent = APP_VERSION;
       }
+
+      // Update last ground check display
+      updateGroundLastCheck();
     }
     
     function saveNotificationSettings() {
@@ -1865,6 +2237,461 @@
     }
     
     // Initialize on load
+    // ===== GROUND CHECK (Reality Check) =====
+
+    // Ground check questions data
+    const groundQuestions = [
+      // Category 1: Family & Love
+      {
+        question: "Did you grow up with both parents present and involved in your life?",
+        yesResponse: "Millions grew up without one or both parents. You had stability, support, love from day one. That's wealth most never know.",
+        noResponse: "That absence shaped you. Acknowledge it.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Do you have a healthy child in your life?",
+        yesResponse: "Some parents bury their children. Yours is alive, healthy, watching you. Every day with him is a gift denied to many.",
+        noResponse: "That longing is real. Honor it.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Is there someone who would drop everything to help you if you called right now?",
+        yesResponse: "Most people die without experiencing that level of loyalty. You have it. When did you last tell them they matter?",
+        noResponse: "That solitude teaches strength. But connection is still possible.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      // Category 2: Health & Body
+      {
+        question: "Can you walk, run, and move your body without assistance?",
+        yesResponse: "Right now someone your age is in a wheelchair wishing they could do what you're avoiding. Your legs work. Use them.",
+        noResponse: "Your body has limits. You're working with what you have. That takes courage.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Is your mind clear enough to read, think, plan, and make decisions?",
+        yesResponse: "Mental clarity is priceless. People lose it to disease, trauma, age. You have it right now. Are you using it to build or to worry?",
+        noResponse: "Mental fog is real. Seeking help is strength, not weakness.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Did you wake up today without chronic physical pain?",
+        yesResponse: "That alone makes you wealthier than millions who suffer daily. You have a body that doesn't fight you. What are you waiting for?",
+        noResponse: "Pain is a relentless teacher. You're still here. That's resilience.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Can you see clearly, hear sounds, and speak your thoughts?",
+        yesResponse: "People would give everything for what you take for granted. You can witness beauty, hear your son laugh, speak your truth. Why aren't you?",
+        noResponse: "You've adapted to limitation. That's a different kind of strength.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      // Category 3: Opportunity & Freedom
+      {
+        question: "Were you born in a country without war, persecution, or violent oppression?",
+        yesResponse: "Billions live in fear, violence, chaos. You were born into peace and freedom. That's not luck—that's massive privilege. What are you building with it?",
+        noResponse: "You know what instability costs. That knowledge is power.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Did you receive an education that taught you to read, write, think, and learn independently?",
+        yesResponse: "Most of humanity never gets that. You can teach yourself anything. That's a superpower. Are you expanding or stagnating?",
+        noResponse: "You've taught yourself despite the gaps. That resourcefulness matters.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Have you traveled beyond your home country and experienced other cultures?",
+        yesResponse: "You're a citizen of the world while others never leave their village. You've seen perspective most never get. What are you doing with it?",
+        noResponse: "Your world is smaller but no less rich. Depth beats breadth.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Can you choose how you earn money and spend your time?",
+        yesResponse: "That's not normal—that's extraordinary. You're not forced into labor. You choose your path. So why are you choosing to play small?",
+        noResponse: "Limited freedom sharpens focus. You work with what you control.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      // Category 4: Resources & Security
+      {
+        question: "Do you have access to clean water whenever you want it?",
+        yesResponse: "Half the world doesn't. You turn a tap and life flows out. Basic survival isn't your struggle. What worthy problem are you solving instead?",
+        noResponse: "Scarcity teaches gratitude. You know what matters.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Do you have a safe, warm place to sleep tonight?",
+        yesResponse: "People sleep on streets, in war zones, in fear. You have shelter. Safety. Peace. What are you doing with that security?",
+        noResponse: "Instability is exhausting. You're surviving it. That takes everything.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Do you have enough food that you never go to bed hungry?",
+        yesResponse: "Hunger is not your battle. You have the luxury of choosing harder problems. Are you choosing worthy ones?",
+        noResponse: "Food insecurity is invisible suffering. You're navigating it.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      },
+      {
+        question: "Do you have daily access to the internet and unlimited information?",
+        yesResponse: "You carry the entire library of human knowledge in your pocket. Billions don't. What are you learning? What are you creating?",
+        noResponse: "You find ways without easy access. That's resourcefulness.",
+        yesPrompt: "Name one way you will respect this gift today.",
+        noPrompt: "What would having this change for you?"
+      }
+    ];
+
+    // Ground check state
+    let groundState = {
+      mode: null,
+      questionIndices: [],
+      currentIndex: 0,
+      currentAnswer: null,
+      responses: [],
+      inProgress: false
+    };
+
+    // Initialize Ground view
+    function initGroundView() {
+      loadGroundData();
+      updateGroundLastCheck();
+      checkForResume();
+      showGroundScreen('groundModeSelect');
+    }
+
+    // Load ground data from localStorage
+    function loadGroundData() {
+      try {
+        const data = localStorage.getItem('groundCheckData');
+        if (data) {
+          return JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Failed to load ground data:', e);
+      }
+      return null;
+    }
+
+    // Save ground data to localStorage
+    function saveGroundData(data) {
+      try {
+        localStorage.setItem('groundCheckData', JSON.stringify(data));
+      } catch (e) {
+        console.error('Failed to save ground data:', e);
+      }
+    }
+
+    // Save in-progress state
+    function saveGroundProgress() {
+      try {
+        localStorage.setItem('groundCheckProgress', JSON.stringify(groundState));
+      } catch (e) {
+        console.error('Failed to save ground progress:', e);
+      }
+    }
+
+    // Load in-progress state
+    function loadGroundProgress() {
+      try {
+        const data = localStorage.getItem('groundCheckProgress');
+        if (data) {
+          return JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Failed to load ground progress:', e);
+      }
+      return null;
+    }
+
+    // Clear in-progress state
+    function clearGroundProgress() {
+      localStorage.removeItem('groundCheckProgress');
+    }
+
+    // Update last check display
+    function updateGroundLastCheck() {
+      const data = loadGroundData();
+      const lastCheckDisplay = document.getElementById('groundLastCheckDisplay');
+      const settingsLastCheck = document.getElementById('lastGroundCheck');
+
+      if (data && data.lastCompleted) {
+        const date = new Date(data.lastCompleted);
+        const formatted = date.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        if (lastCheckDisplay) lastCheckDisplay.textContent = `Last check: ${formatted}`;
+        if (settingsLastCheck) settingsLastCheck.textContent = formatted;
+      } else {
+        if (lastCheckDisplay) lastCheckDisplay.textContent = 'Last check: Never';
+        if (settingsLastCheck) settingsLastCheck.textContent = 'Never completed';
+      }
+    }
+
+    // Check if there's a resumable session
+    function checkForResume() {
+      const progress = loadGroundProgress();
+      const resumeOption = document.getElementById('groundResumeOption');
+
+      if (progress && progress.inProgress && progress.responses.length > 0) {
+        resumeOption.style.display = 'block';
+      } else {
+        resumeOption.style.display = 'none';
+      }
+    }
+
+    // Show a specific ground screen
+    function showGroundScreen(screenId) {
+      const screens = document.querySelectorAll('.ground-screen');
+      screens.forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // Start ground check
+    function startGroundCheck(mode) {
+      groundState = {
+        mode: mode,
+        questionIndices: [],
+        currentIndex: 0,
+        currentAnswer: null,
+        responses: [],
+        inProgress: true
+      };
+
+      if (mode === 'quick') {
+        // Random 5 questions
+        const indices = [];
+        while (indices.length < 5) {
+          const rand = Math.floor(Math.random() * groundQuestions.length);
+          if (!indices.includes(rand)) {
+            indices.push(rand);
+          }
+        }
+        groundState.questionIndices = indices;
+      } else {
+        // All 15 questions in order
+        groundState.questionIndices = groundQuestions.map((_, i) => i);
+      }
+
+      clearGroundProgress();
+      saveGroundProgress();
+      showQuestion();
+    }
+
+    // Resume ground check
+    function resumeGroundCheck() {
+      const progress = loadGroundProgress();
+      if (progress && progress.inProgress) {
+        groundState = progress;
+        showQuestion();
+      } else {
+        showToast('No session to resume');
+        checkForResume();
+      }
+    }
+
+    // Show current question
+    function showQuestion() {
+      showGroundScreen('groundQuestion');
+
+      const total = groundState.questionIndices.length;
+      const current = groundState.currentIndex + 1;
+      const qIndex = groundState.questionIndices[groundState.currentIndex];
+      const q = groundQuestions[qIndex];
+
+      // Update progress
+      document.getElementById('groundProgressText').textContent = `${current} / ${total}`;
+      document.getElementById('groundProgressFill').style.width = `${(current / total) * 100}%`;
+
+      // Update question
+      document.getElementById('groundQuestionText').textContent = q.question;
+
+      // Reset answer state
+      groundState.currentAnswer = null;
+      document.getElementById('groundYes').classList.remove('selected');
+      document.getElementById('groundNo').classList.remove('selected');
+      document.getElementById('groundResponseArea').style.display = 'none';
+      document.getElementById('groundCommitmentInput').value = '';
+      document.getElementById('groundNextBtn').style.display = 'none';
+    }
+
+    // Handle yes/no answer
+    function groundAnswer(answer) {
+      groundState.currentAnswer = answer;
+
+      const qIndex = groundState.questionIndices[groundState.currentIndex];
+      const q = groundQuestions[qIndex];
+
+      // Update button states
+      document.getElementById('groundYes').classList.toggle('selected', answer === 'yes');
+      document.getElementById('groundNo').classList.toggle('selected', answer === 'no');
+
+      // Show response area
+      document.getElementById('groundResponseArea').style.display = 'block';
+
+      if (answer === 'yes') {
+        document.getElementById('groundTruthText').textContent = q.yesResponse;
+        document.getElementById('groundCommitmentLabel').textContent = q.yesPrompt;
+        document.getElementById('groundCommitmentInput').placeholder = 'I will...';
+        document.getElementById('groundCommitmentInput').required = true;
+        document.getElementById('groundNextBtn').style.display = 'none';
+
+        // Add input listener for required field
+        const input = document.getElementById('groundCommitmentInput');
+        input.oninput = function() {
+          document.getElementById('groundNextBtn').style.display = this.value.trim() ? 'block' : 'none';
+        };
+      } else {
+        document.getElementById('groundTruthText').textContent = q.noResponse;
+        document.getElementById('groundCommitmentLabel').textContent = q.noPrompt;
+        document.getElementById('groundCommitmentInput').placeholder = '(Optional)';
+        document.getElementById('groundCommitmentInput').required = false;
+        document.getElementById('groundNextBtn').style.display = 'block';
+
+        // Remove required input listener
+        document.getElementById('groundCommitmentInput').oninput = null;
+      }
+    }
+
+    // Go to next question
+    function groundNext() {
+      const qIndex = groundState.questionIndices[groundState.currentIndex];
+      const q = groundQuestions[qIndex];
+      const commitment = document.getElementById('groundCommitmentInput').value.trim();
+
+      // Validate if yes answer
+      if (groundState.currentAnswer === 'yes' && !commitment) {
+        showToast('Please enter your commitment');
+        return;
+      }
+
+      // Save response
+      groundState.responses.push({
+        questionIndex: qIndex,
+        question: q.question,
+        answer: groundState.currentAnswer,
+        commitment: commitment || null
+      });
+
+      // Save progress
+      groundState.currentIndex++;
+      saveGroundProgress();
+
+      // Check if complete
+      if (groundState.currentIndex >= groundState.questionIndices.length) {
+        completeGroundCheck();
+      } else {
+        showQuestion();
+      }
+    }
+
+    // Exit ground check (save progress)
+    function exitGroundCheck() {
+      if (groundState.inProgress && groundState.responses.length > 0) {
+        saveGroundProgress();
+        showToast('Progress saved. You can resume later.');
+      }
+      showGroundScreen('groundModeSelect');
+      checkForResume();
+    }
+
+    // Complete ground check
+    function completeGroundCheck() {
+      groundState.inProgress = false;
+      clearGroundProgress();
+
+      // Count wealth (yes answers)
+      const wealthCount = groundState.responses.filter(r => r.answer === 'yes').length;
+      const totalQuestions = groundState.questionIndices.length;
+
+      // Save completed data
+      const data = {
+        lastCompleted: new Date().toISOString(),
+        mode: groundState.mode,
+        totalWealth: wealthCount,
+        responses: groundState.responses
+      };
+      saveGroundData(data);
+
+      // Update displays
+      updateGroundLastCheck();
+
+      // Show summary
+      document.getElementById('groundWealthCount').textContent = wealthCount;
+      document.getElementById('groundSummaryWealth').textContent = wealthCount;
+      document.getElementById('groundSummaryTotal').textContent = totalQuestions;
+      document.getElementById('groundSummaryDate').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      showGroundScreen('groundSummary');
+    }
+
+    // View commitments
+    function viewGroundCommitments() {
+      const data = loadGroundData();
+      const list = document.getElementById('groundCommitmentsList');
+
+      if (!data || !data.responses) {
+        list.innerHTML = '<p style="color: var(--text-dim);">No commitments recorded.</p>';
+        showGroundScreen('groundCommitments');
+        return;
+      }
+
+      const commitments = data.responses.filter(r => r.answer === 'yes' && r.commitment);
+
+      if (commitments.length === 0) {
+        list.innerHTML = '<p style="color: var(--text-dim);">No commitments recorded.</p>';
+      } else {
+        list.innerHTML = commitments.map(c => `
+          <div class="ground-commitment-item">
+            <div class="ground-commitment-q">${c.question}</div>
+            <div class="ground-commitment-a">${c.commitment}</div>
+          </div>
+        `).join('');
+      }
+
+      showGroundScreen('groundCommitments');
+    }
+
+    // Show ground summary
+    function showGroundSummary() {
+      showGroundScreen('groundSummary');
+    }
+
+    // Reset ground check
+    function resetGroundCheck() {
+      groundState = {
+        mode: null,
+        questionIndices: [],
+        currentIndex: 0,
+        currentAnswer: null,
+        responses: [],
+        inProgress: false
+      };
+      clearGroundProgress();
+      showGroundScreen('groundModeSelect');
+      checkForResume();
+    }
+
+    // ===== END GROUND CHECK =====
+
     loadFromStorage();
     init();
   </script>
